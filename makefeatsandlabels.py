@@ -139,6 +139,9 @@ def main():
 
 		k = 0
 
+		with open('nextdaydict.pickle', 'rb') as handle:
+			nextdaydict = pickle.load(handle)
+
 		for key, value in content.items():
 
 			try:
@@ -146,15 +149,8 @@ def main():
 				if k % 100 == 0:
 					print(k)
 				k += 1
-				nextday = key[1] + timedelta(days=1)
-				nextnextday = nextday + timedelta(days=5)
-				start_date = str(nextday.date())
-				end_date = str(nextnextday.date())
-				panel_data = data.DataReader(key[0], 'iex', nextday, nextnextday)
-				
-				label = 1 if panel_data['open'][0] < panel_data['close'][0] else 0
 
-				nextdaydict[key] = label
+				label = nextdaydict[key[0]]
 
 				x.append(value)
 				y.append(label)
@@ -175,8 +171,6 @@ def main():
 		np.savetxt('negated_features.txt', x, fmt='%f')
 		np.savetxt('negated_labels.txt', y, fmt='%d')
 
-		with open('nextdaydict.pickle', 'wb') as handle:
-			pickle.dump(nextdaydict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 		#b = np.loadtxt('traindata.txt', dtype=float)
 
 

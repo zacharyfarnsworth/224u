@@ -151,8 +151,18 @@ def main():
 				start_date = str(nextday.date())
 				end_date = str(nextnextday.date())
 				panel_data = data.DataReader(key[0], 'iex', nextday, nextnextday)
+
+				start = panel_data['open'][0]
+
+				nextday = key[1] + timedelta(days=30)
+				nextnextday = nextday + timedelta(days=5)
+				start_date = str(nextday.date())
+				end_date = str(nextnextday.date())
+				panel_data = data.DataReader(key[0], 'iex', nextday, nextnextday)
+
+				end = panel_data['close'][0]
 				
-				label = 1 if panel_data['open'][0] < panel_data['close'][0] else 0
+				label = 1 if start < end else 0
 
 				nextdaydict[key] = label
 
@@ -175,7 +185,7 @@ def main():
 		np.savetxt('negated_features.txt', x, fmt='%f')
 		np.savetxt('negated_labels.txt', y, fmt='%d')
 
-		with open('nextdaydict.pickle', 'wb') as handle:
+		with open('nextday30dict.pickle', 'wb') as handle:
 			pickle.dump(nextdaydict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 		#b = np.loadtxt('traindata.txt', dtype=float)
 
