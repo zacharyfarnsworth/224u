@@ -15,7 +15,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import precision_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import recall_score
-from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import MultinomialNB
 from sklearn import linear_model
 from sklearn.neural_network import MLPClassifier
 
@@ -48,7 +48,7 @@ def main():
 	texts = []
 	labels = []
 
-	with open('nextdaydict.pickle', 'rb') as handle:
+	with open('nextday30dict.pickle', 'rb') as handle:
 		nextdaydict = pickle.load(handle)
 
 	# with open('LoughranMcDonald_MasterDictionary_2018.csv',encoding='utf8') as csv_file:
@@ -69,7 +69,7 @@ def main():
 	# 			line_count += 1
 		#print(masterdict)
 	
-
+	prev = None
 	with open('qna.csv',encoding='utf8') as csv_file:
 		csv_reader = csv.reader(csv_file, delimiter=',')
 		line_count = 0
@@ -92,68 +92,82 @@ def main():
 
 				if (row[3],date) not in nextdaydict:
 					continue
-				texts.append(row[13])
-				labels.append(nextdaydict[(row[3],date)])
+				if prev == (row[3],date):
+					texts[len(texts)-1] = " ".join([texts[len(texts)-1], row[13]])
+				else:
+					texts.append(row[13])
+					prev = (row[3],date)
+					labels.append(nextdaydict[(row[3],date)])
 				line_count += 1
 
 		print('here')
 
-	vectorizer = CountVectorizer(max_features=30000, ngram_range=(1, 2))
+	num_feats = [100,1000,10000,30000]
 
-	#print(texts)
+	for n in num_feats:
 
-	x_train, x_test, y_train, y_test = train_test_split(texts, labels, test_size=0.2)
+		print('Number of features = ' + str(n))
 
-	#print(x_train)
+		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 2))
 
-	X_train = vectorizer.fit_transform(x_train)
+		#print(texts)
 
-	#print(X_train.toarray())
-	print(X_train.shape)
+		x_train, x_test, y_train, y_test = train_test_split(texts, labels, test_size=0.2)
 
-	X_test = vectorizer.transform(x_test)
+		#print(x_train)
 
-	print(X_test.shape)
+		X_train = vectorizer.fit_transform(x_train)
 
-	#Logistic Regression
+		#print(X_train.toarray())
+		print(X_train.shape)
 
-	logisticRegr = LogisticRegression()
-	logisticRegr.fit(X_train, y_train)
+		X_test = vectorizer.transform(x_test)
 
-	y_pred = logisticRegr.predict(X_test)
+		print(X_test.shape)
 
-	score = logisticRegr.score(X_test, y_test)
-	print(score)
+		#Logistic Regression
 
-	print(precision_score(y_test, y_pred, average='macro'))
-	print(recall_score(y_test, y_pred, average='macro'))
-	print(f1_score(y_test, y_pred, average='macro'))
+		# logisticRegr = LogisticRegression(max_iter=1000)
+		# logisticRegr.fit(X_train, y_train)
 
-	#GaussianNB
+		# y_pred = logisticRegr.predict(X_test)
 
-	# gnb = GaussianNB()
-	# gnb.fit(X_train.toarray(), y_train)
+		# pos = np.sum(y_pred)/len(y_test)
 
-	# y_pred = gnb.predict(X_test)
+		# print('percent positive predictions = ' + str(pos))
 
-	# score = gnb.score(X_test.toarray(), y_test)
-	# print(score)
+		# score = logisticRegr.score(X_test, y_test)
+		# print(score)
 
-	# print(precision_score(y_test, y_pred, average='macro'))
-	# print(recall_score(y_test, y_pred, average='macro'))
-	# print(f1_score(y_test, y_pred, average='macro'))
+		# print(precision_score(y_test, y_pred, average='macro'))
+		# print(recall_score(y_test, y_pred, average='macro'))
+		# print(f1_score(y_test, y_pred, average='macro'))
 
-	#SGD
+		#Naive Bayes
 
-	# clf = linear_model.SGDClassifier(max_iter=1000000, tol=1e-10)
-	# clf.fit(X_train, y_train)
-	# print(clf.score(X_test,y_test))
+		mnb = MultinomialNB()
+		mnb.fit(X_train, y_train)
 
-	# y_pred = clf.predict(X_test)
+		y_pred = mnb.predict(X_test)
 
-	# print(precision_score(y_test, y_pred, average='macro'))
-	# print(recall_score(y_test, y_pred, average='macro'))
-	# print(f1_score(y_test, y_pred, average='macro'))
+		score = mnb.score(X_test, y_test)
+		print(score)
+
+		print(precision_score(y_test, y_pred, average='macro'))
+		print(recall_score(y_test, y_pred, average='macro'))
+		print(f1_score(y_test, y_pred, average='macro'))
+
+		#SGD
+
+		# clf = linear_model.SGDClassifier(max_iter=1000000, tol=1e-10)
+		# clf.fit(X_train, y_train)
+		# print(clf.score(X_test,y_test))
+
+		# y_pred = clf.predict(X_test)
+
+		# print(precision_score(y_test, y_pred, average='macro'))
+		# print(recall_score(y_test, y_pred, average='macro'))
+		# print(f1_score(y_test, y_pred, average='macro'))
 
 
 if __name__ == "__main__":
