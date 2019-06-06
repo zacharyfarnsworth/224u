@@ -108,7 +108,7 @@ def main():
 
 		print('Number of features = ' + str(n))
 
-		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 2))
+		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 3))
 
 		#print(texts)
 
