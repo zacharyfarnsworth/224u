@@ -111,12 +111,14 @@ def main():
 
 		print('Number of features = ' + str(n))
 
-		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 2), 
+		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 1), 
 			binary=True, stop_words=ignoredwords)
 
 		#print(texts)
 
 		x_train, x_test, y_train, y_test = train_test_split(texts, labels, test_size=0.2)
+
+		print('Percent positive = ' + str(np.sum(y_test)/len(y_test)))
 
 		#print(x_train)
 
