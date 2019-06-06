@@ -56,22 +56,22 @@ def main():
 	with open('nextday30dict.pickle', 'rb') as handle:
 		nextdaydict = pickle.load(handle)
 
-	# with open('LoughranMcDonald_MasterDictionary_2018.csv',encoding='utf8') as csv_file:
-	# 	csv_reader = csv.reader(csv_file, delimiter=',')
-	# 	line_count = 0
-	# 	for row in csv_reader:
-	# 		if line_count == 0:
-	# 			print(f'Column names are {", ".join(row)}')
-	# 			line_count += 1
-	# 		else:
-	# 			features = np.zeros(numfeatures)
-	# 			for i in range(7,17):
-	# 				val = float(row[i])
-	# 				if val > 100:
-	# 					val = 1.0
-	# 				features[i-7] = val
-	# 			masterdict[row[0]] = features
-	# 			line_count += 1
+	with open('LoughranMcDonald_MasterDictionary_2018.csv',encoding='utf8') as csv_file:
+		csv_reader = csv.reader(csv_file, delimiter=',')
+		line_count = 0
+		for row in csv_reader:
+			if line_count == 0:
+				print(f'Column names are {", ".join(row)}')
+				line_count += 1
+			else:
+				features = np.zeros(numfeatures)
+				for i in range(7,17):
+					val = float(row[i])
+					if val > 100:
+						val = 1.0
+					features[i-7] = val
+				masterdict[row[0]] = features
+				line_count += 1
 		#print(masterdict)
 	
 	# prev = None
@@ -131,7 +131,7 @@ def main():
 
 		x_train, x_test, y_train, y_test = train_test_split(texts, labels, test_size=0.2)
 
-		print('Percent positive = ' + str(np.sum(y_test)/len(y_test)))
+		print('Percent positive = ' + str(np.sum(labels)/len(labels)))
 
 		#print(x_train)
 
@@ -148,24 +148,24 @@ def main():
 
 		#Logistic Regression
 
-		logisticRegr = LogisticRegression(max_iter=10000)
-		logisticRegr.fit(X_train, y_train)
+		# logisticRegr = LogisticRegression(max_iter=10000)
+		# logisticRegr.fit(X_train, y_train)
 
-		y_pred = logisticRegr.predict(X_test)
+		# y_pred = logisticRegr.predict(X_test)
 
-		pos = np.sum(y_pred)/len(y_test)
+		# pos = np.sum(y_pred)/len(y_test)
 
-		print('percent positive predictions = ' + str(pos))
+		# print('percent positive predictions = ' + str(pos))
 
-		score = logisticRegr.score(X_test, y_test)
-		print(score)
-		print(f1_score(y_test, y_pred, average='macro'))
+		# score = logisticRegr.score(X_test, y_test)
+		# print(score)
+		# print(f1_score(y_test, y_pred, average='macro'))
 
-		coefs = np.abs(logisticRegr.coef_[0])
-		top10 = np.argpartition(coefs, -10)[-10:]
-		top10_sorted = top10[np.argsort(coefs[top10])]
-		for feat in top10_sorted:
-			print(feature_names[feat])
+		# coefs = np.abs(logisticRegr.coef_[0])
+		# top10 = np.argpartition(coefs, -10)[-10:]
+		# top10_sorted = top10[np.argsort(coefs[top10])]
+		# for feat in top10_sorted:
+		# 	print(feature_names[feat])
 
 		#Naive Bayes
 

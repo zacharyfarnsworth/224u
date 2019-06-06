@@ -124,7 +124,7 @@ def main():
 
 		print('Number of features = ' + str(n))
 
-		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 1), 
+		vectorizer = CountVectorizer(max_features=n, ngram_range=(2, 2), 
 			binary=True, stop_words=ignoredwords)
 
 		#print(texts)
@@ -148,17 +148,37 @@ def main():
 
 		#Logistic Regression
 
-		logisticRegr = LogisticRegression(max_iter=10000)
-		logisticRegr.fit(X_train, y_train)
+		# logisticRegr = LogisticRegression(max_iter=10000)
+		# logisticRegr.fit(X_train, y_train)
 
-		y_pred = logisticRegr.predict(X_test)
+		# y_pred = logisticRegr.predict(X_test)
 
-		pos = np.sum(y_pred)/len(y_test)
+		# pos = np.sum(y_pred)/len(y_test)
 
-		print('percent positive predictions = ' + str(pos))
+		# print('percent positive predictions = ' + str(pos))
 
-		score = logisticRegr.score(X_test, y_test)
+		# score = logisticRegr.score(X_test, y_test)
+		# print(score)
+		# print(f1_score(y_test, y_pred, average='macro'))
+
+		# coefs = np.abs(logisticRegr.coef_[0])
+		# top10 = np.argpartition(coefs, -10)[-10:]
+		# top10_sorted = top10[np.argsort(coefs[top10])]
+		# for feat in top10_sorted:
+		# 	print(feature_names[feat])
+
+		#Naive Bayes
+
+		mnb = MultinomialNB()
+		mnb.fit(X_train, y_train)
+
+		y_pred = mnb.predict(X_test)
+
+		score = mnb.score(X_test, y_test)
 		print(score)
+
+		print(precision_score(y_test, y_pred, average='macro'))
+		print(recall_score(y_test, y_pred, average='macro'))
 		print(f1_score(y_test, y_pred, average='macro'))
 
 		coefs = np.abs(logisticRegr.coef_[0])
@@ -166,20 +186,6 @@ def main():
 		top10_sorted = top10[np.argsort(coefs[top10])]
 		for feat in top10_sorted:
 			print(feature_names[feat])
-
-		#Naive Bayes
-
-		# mnb = MultinomialNB()
-		# mnb.fit(X_train, y_train)
-
-		# y_pred = mnb.predict(X_test)
-
-		# score = mnb.score(X_test, y_test)
-		# print(score)
-
-		# print(precision_score(y_test, y_pred, average='macro'))
-		# print(recall_score(y_test, y_pred, average='macro'))
-		# print(f1_score(y_test, y_pred, average='macro'))
 
 		#SGD
 

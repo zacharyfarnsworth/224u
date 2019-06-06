@@ -53,7 +53,7 @@ def main():
 	texts = []
 	labels = []
 
-	with open('nextdaydict.pickle', 'rb') as handle:
+	with open('nextday30dict.pickle', 'rb') as handle:
 		nextdaydict = pickle.load(handle)
 
 	# with open('LoughranMcDonald_MasterDictionary_2018.csv',encoding='utf8') as csv_file:
@@ -109,12 +109,12 @@ def main():
 	# 				labels.append(nextdaydict[(row[3],date)])
 	# 			line_count += 1
 
-		print('here')
+	# 	print('here')
 
-	with open('textsnextday.pickle', 'rb') as fp:
+	with open('texts30day.pickle', 'rb') as fp:
 		texts = pickle.load(fp)
 
-	with open('labelsnextday.pickle', 'rb') as fp:
+	with open('labels30day.pickle', 'rb') as fp:
 		labels = pickle.load(fp)
 
 	#num_feats = [100,1000,10000,30000]
