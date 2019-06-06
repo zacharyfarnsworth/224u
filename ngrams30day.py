@@ -21,7 +21,7 @@ from sklearn.neural_network import MLPClassifier
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
-
+from nltk import word_tokenize
 
 def main():
 
@@ -79,6 +79,8 @@ def main():
 		csv_reader = csv.reader(csv_file, delimiter=',')
 		line_count = 0
 		for row in csv_reader:
+			if line_count % 1000 == 0:
+				print(line_count/1000)
 			if line_count == 0:
 				#print(f'Column names are {", ".join(row)}')
 				line_count += 1
@@ -97,10 +99,12 @@ def main():
 
 				if (row[3],date) not in nextdaydict:
 					continue
+
+				stems = " ".join([stemmer.stem(x) for x in word_tokenize(row[13])])
 				if prev == (row[3],date):
-					texts[len(texts)-1] = " ".join([texts[len(texts)-1], row[13]])
+					texts[len(texts)-1] = " ".join([texts[len(texts)-1], stems])
 				else:
-					texts.append(row[13])
+					texts.append(stems)
 					prev = (row[3],date)
 					labels.append(nextdaydict[(row[3],date)])
 				line_count += 1
@@ -114,10 +118,16 @@ def main():
 
 		print('Number of features = ' + str(n))
 
-		vectorizer = CountVectorizer(tokenizer=stemmer, max_features=n, ngram_range=(1, 1), 
+		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 1), 
 			binary=True)
 
 		#print(texts)
+
+		with open('texts30day', 'wb') as fp:
+			pickle.dump(texts, fp)
+
+		with open('labels30day', 'wb') as fp:
+			pickle.dump(labels, fp)
 
 		x_train, x_test, y_train, y_test = train_test_split(texts, labels, test_size=0.2)
 

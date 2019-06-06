@@ -79,8 +79,8 @@ def main():
 		csv_reader = csv.reader(csv_file, delimiter=',')
 		line_count = 0
 		for row in csv_reader:
-			if line_count % 100 == 0:
-				print(line_count)
+			if line_count % 1000 == 0:
+				print(line_count/1000)
 			if line_count == 0:
 				#print(f'Column names are {", ".join(row)}')
 				line_count += 1
@@ -122,6 +122,12 @@ def main():
 			binary=True)
 
 		#print(texts)
+
+		with open('textsnextday', 'wb') as fp:
+			pickle.dump(texts, fp)
+
+		with open('labelsnextday', 'wb') as fp:
+			pickle.dump(labels, fp)
 
 		x_train, x_test, y_train, y_test = train_test_split(texts, labels, test_size=0.2)
 
