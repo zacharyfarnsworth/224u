@@ -74,49 +74,48 @@ def main():
 	# 			line_count += 1
 		#print(masterdict)
 	
-	prev = None
-	with open('qna.csv',encoding='utf8') as csv_file:
-		csv_reader = csv.reader(csv_file, delimiter=',')
-		line_count = 0
-		for row in csv_reader:
-			if line_count % 1000 == 0:
-				print(line_count/1000)
-			if line_count == 0:
-				#print(f'Column names are {", ".join(row)}')
-				line_count += 1
-			else:
-				try:
-					day = row[10][:row[10].index(',')+6]
-				except Exception:
-					continue
-				try:
-					date = datetime.strptime(day, '%B %d, %Y')
-				except Exception:
-					try:
-						date = datetime.strptime(day, '%b %d, %Y')
-					except Exception:
-						continue
+	# prev = None
+	# with open('qna.csv',encoding='utf8') as csv_file:
+	# 	csv_reader = csv.reader(csv_file, delimiter=',')
+	# 	line_count = 0
+	# 	for row in csv_reader:
+	# 		if line_count % 1000 == 0:
+	# 			print(line_count/1000)
+	# 		if line_count == 0:
+	# 			#print(f'Column names are {", ".join(row)}')
+	# 			line_count += 1
+	# 		else:
+	# 			try:
+	# 				day = row[10][:row[10].index(',')+6]
+	# 			except Exception:
+	# 				continue
+	# 			try:
+	# 				date = datetime.strptime(day, '%B %d, %Y')
+	# 			except Exception:
+	# 				try:
+	# 					date = datetime.strptime(day, '%b %d, %Y')
+	# 				except Exception:
+	# 					continue
 
-				if (row[3],date) not in nextdaydict:
-					continue
+	# 			if (row[3],date) not in nextdaydict:
+	# 				continue
 
-				stems = " ".join([stemmer.stem(x) for x in word_tokenize(row[13])])
-				if prev == (row[3],date):
-					texts[len(texts)-1] = " ".join([texts[len(texts)-1], stems])
-				else:
-					texts.append(stems)
-					prev = (row[3],date)
-					labels.append(nextdaydict[(row[3],date)])
-				line_count += 1
+	# 			stems = " ".join([stemmer.stem(x) for x in word_tokenize(row[13])])
+	# 			if prev == (row[3],date):
+	# 				texts[len(texts)-1] = " ".join([texts[len(texts)-1], stems])
+	# 			else:
+	# 				texts.append(stems)
+	# 				prev = (row[3],date)
+	# 				labels.append(nextdaydict[(row[3],date)])
+	# 			line_count += 1
 
-		print('here')
+	# 	print('here')
 
+	with open('texts30day', 'rb') as fp:
+		texts = pickle.load(fp)
 
-	with open('texts30day', 'wb') as fp:
-		pickle.dump(texts, fp)
-
-	with open('labels30day', 'wb') as fp:
-		pickle.dump(labels, fp)
+	with open('label30day', 'rb') as fp:
+		labels = pickle.load(fp)
 
 	#num_feats = [100,1000,10000,30000]
 	num_feats = [1000,10000,100000,1000000]
@@ -126,7 +125,7 @@ def main():
 		print('Number of features = ' + str(n))
 
 		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 1), 
-			binary=True)
+			binary=True, stop_words=ignoredwords)
 
 		#print(texts)
 
