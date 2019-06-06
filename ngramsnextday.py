@@ -111,6 +111,12 @@ def main():
 
 		print('here')
 
+	with open('textsnextday', 'wb') as fp:
+		pickle.dump(texts, fp)
+
+	with open('labelsnextday', 'wb') as fp:
+		pickle.dump(labels, fp)
+
 	#num_feats = [100,1000,10000,30000]
 	num_feats = [1000,10000,100000,1000000]
 
@@ -122,12 +128,6 @@ def main():
 			binary=True)
 
 		#print(texts)
-
-		with open('textsnextday', 'wb') as fp:
-			pickle.dump(texts, fp)
-
-		with open('labelsnextday', 'wb') as fp:
-			pickle.dump(labels, fp)
 
 		x_train, x_test, y_train, y_test = train_test_split(texts, labels, test_size=0.2)
 
