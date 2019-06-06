@@ -20,6 +20,7 @@ from sklearn import linear_model
 from sklearn.neural_network import MLPClassifier
 import nltk
 from nltk.corpus import stopwords
+from nltk.stem.snowball import SnowballStemmer
 
 
 def main():
@@ -45,6 +46,8 @@ def main():
 
 
 	ignoredwords = list(stopwords.words('english'))
+
+	stemmer = SnowballStemmer("english", ignore_stopwords=True)
 
 
 	texts = []
@@ -111,8 +114,8 @@ def main():
 
 		print('Number of features = ' + str(n))
 
-		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 1), 
-			binary=True, stop_words=ignoredwords)
+		vectorizer = CountVectorizer(tokenizer=stemmer, max_features=n, ngram_range=(1, 1), 
+			binary=True)
 
 		#print(texts)
 
