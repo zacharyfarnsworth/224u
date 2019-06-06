@@ -111,7 +111,7 @@ def main():
 
 		print('Number of features = ' + str(n))
 
-		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 2), 
+		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 1), 
 			binary=True, stop_words=ignoredwords)
 
 		#print(texts)
@@ -133,35 +133,35 @@ def main():
 
 		#Logistic Regression
 
-		# logisticRegr = LogisticRegression(max_iter=1000)
-		# logisticRegr.fit(X_train, y_train)
+		logisticRegr = LogisticRegression(max_iter=10000)
+		logisticRegr.fit(X_train, y_train)
 
-		# y_pred = logisticRegr.predict(X_test)
+		y_pred = logisticRegr.predict(X_test)
 
-		# pos = np.sum(y_pred)/len(y_test)
+		pos = np.sum(y_pred)/len(y_test)
 
-		# print('percent positive predictions = ' + str(pos))
+		print('percent positive predictions = ' + str(pos))
 
-		# score = logisticRegr.score(X_test, y_test)
-		# print(score)
-
-		# print(precision_score(y_test, y_pred, average='macro'))
-		# print(recall_score(y_test, y_pred, average='macro'))
-		# print(f1_score(y_test, y_pred, average='macro'))
-
-		#Naive Bayes
-
-		mnb = MultinomialNB()
-		mnb.fit(X_train, y_train)
-
-		y_pred = mnb.predict(X_test)
-
-		score = mnb.score(X_test, y_test)
+		score = logisticRegr.score(X_test, y_test)
 		print(score)
 
 		print(precision_score(y_test, y_pred, average='macro'))
 		print(recall_score(y_test, y_pred, average='macro'))
 		print(f1_score(y_test, y_pred, average='macro'))
+
+		#Naive Bayes
+
+		# mnb = MultinomialNB()
+		# mnb.fit(X_train, y_train)
+
+		# y_pred = mnb.predict(X_test)
+
+		# score = mnb.score(X_test, y_test)
+		# print(score)
+
+		# print(precision_score(y_test, y_pred, average='macro'))
+		# print(recall_score(y_test, y_pred, average='macro'))
+		# print(f1_score(y_test, y_pred, average='macro'))
 
 		#SGD
 
