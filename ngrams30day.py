@@ -151,7 +151,8 @@ def main():
 		coefs = np.abs(logisticRegr.coef_[0])
 		top10 = np.argpartition(coefs, -10)[-10:]
 		top10_sorted = top10[np.argsort(coefs[top10])]
-		print(feature_names[top10_sorted])
+		for feat in top10_sorted:
+			print(feature_names[feat])
 
 		#Naive Bayes
 
