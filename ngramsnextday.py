@@ -111,10 +111,10 @@ def main():
 
 		print('here')
 
-	with open('textsnextday', 'wb') as fp:
+	with open('textsnextday.pickle', 'wb') as fp:
 		pickle.dump(texts, fp)
 
-	with open('labelsnextday', 'wb') as fp:
+	with open('labelsnextday.pickle', 'wb') as fp:
 		pickle.dump(labels, fp)
 
 	#num_feats = [100,1000,10000,30000]
@@ -125,7 +125,7 @@ def main():
 		print('Number of features = ' + str(n))
 
 		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 1), 
-			binary=True)
+			binary=True, stop_words=ignoredwords)
 
 		#print(texts)
 
