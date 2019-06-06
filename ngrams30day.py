@@ -111,10 +111,10 @@ def main():
 
 	# 	print('here')
 
-	with open('texts30day', 'rb') as fp:
+	with open('texts30day.pickle', 'rb') as fp:
 		texts = pickle.load(fp)
 
-	with open('label30day', 'rb') as fp:
+	with open('labels30day.pickle', 'rb') as fp:
 		labels = pickle.load(fp)
 
 	#num_feats = [100,1000,10000,30000]
