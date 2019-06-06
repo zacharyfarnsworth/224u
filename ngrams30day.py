@@ -105,7 +105,7 @@ def main():
 		print('here')
 
 	#num_feats = [100,1000,10000,30000]
-	num_feats = [1000,10000,100000,1000000]
+	num_feats = [1000,10000,100000]
 
 	for n in num_feats:
 
@@ -124,6 +124,8 @@ def main():
 
 		X_train = vectorizer.fit_transform(x_train)
 
+		feature_names = vectorizer.get_feature_names()
+
 		#print(X_train.toarray())
 		print(X_train.shape)
 
@@ -133,7 +135,7 @@ def main():
 
 		#Logistic Regression
 
-		logisticRegr = LogisticRegression(max_iter=1000)
+		logisticRegr = LogisticRegression(max_iter=10000)
 		logisticRegr.fit(X_train, y_train)
 
 		y_pred = logisticRegr.predict(X_test)
@@ -144,10 +146,12 @@ def main():
 
 		score = logisticRegr.score(X_test, y_test)
 		print(score)
-
-		print(precision_score(y_test, y_pred, average='macro'))
-		print(recall_score(y_test, y_pred, average='macro'))
 		print(f1_score(y_test, y_pred, average='macro'))
+
+		coefs = np.abs(logisticRegr.coef_[0])
+		top10 = np.argpartition(coefs, -10)[-10:]
+		top10_sorted = top10[np.argsort(coefs[top10])]
+		print(feature_names[top10_sorted])
 
 		#Naive Bayes
 
