@@ -105,7 +105,7 @@ def main():
 		print('here')
 
 	#num_feats = [100,1000,10000,30000]
-	num_feats = [1000,10000,100000]
+	num_feats = [1000,10000,100000,1000000]
 
 	for n in num_feats:
 
