@@ -181,7 +181,7 @@ def main():
 		print(recall_score(y_test, y_pred, average='macro'))
 		print(f1_score(y_test, y_pred, average='macro'))
 
-		coefs = np.abs(logisticRegr.coef_[0])
+		coefs = np.abs(mnb.coef_[0])
 		top10 = np.argpartition(coefs, -10)[-10:]
 		top10_sorted = top10[np.argsort(coefs[top10])]
 		for feat in top10_sorted:
