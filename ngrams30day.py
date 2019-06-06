@@ -18,6 +18,8 @@ from sklearn.metrics import recall_score
 from sklearn.naive_bayes import MultinomialNB
 from sklearn import linear_model
 from sklearn.neural_network import MLPClassifier
+import nltk
+from nltk.corpus import stopwords
 
 
 def main():
@@ -42,7 +44,7 @@ def main():
 		'DOESNT','DIDNT','ISNT','ARENT','AINT'}
 
 
-	#ignoredwords = set(stopwords.words('english'))
+	ignoredwords = list(stopwords.words('english'))
 
 
 	texts = []
@@ -103,13 +105,14 @@ def main():
 		print('here')
 
 	#num_feats = [100,1000,10000,30000]
-	num_feats = [500000, 1000000]
+	num_feats = [1000,10000,100000,1000000]
 
 	for n in num_feats:
 
 		print('Number of features = ' + str(n))
 
-		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 3))
+		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 2), 
+			binary=True, stop_words=ignoredwords)
 
 		#print(texts)
 
