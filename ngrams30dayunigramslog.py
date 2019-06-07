@@ -185,7 +185,7 @@ def main():
 		print('Number of features = ' + str(n))
 
 		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 1), 
-			binary=True, stop_words=ignoredwords)
+			binary=False, stop_words=ignoredwords)
 
 		#print(texts)
 
@@ -233,7 +233,10 @@ def main():
 		top10 = np.argpartition(coefs, -10)[-10:]
 		top10_sorted = top10[np.argsort(coefs[top10])]
 		for feat in top10_sorted:
-			print(feature_names[feat])
+			if feat >= n:
+				print(feat)
+			else:
+				print(feature_names[feat])
 
 		#Naive Bayes
 

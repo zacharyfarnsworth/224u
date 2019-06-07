@@ -168,10 +168,10 @@ def main():
 
 	# 	print('here')
 
-	with open('textsday.pickle', 'rb') as fp:
+	with open('textsnextday.pickle', 'rb') as fp:
 		texts = pickle.load(fp)
 
-	with open('labelsday.pickle', 'rb') as fp:
+	with open('labelsnextday.pickle', 'rb') as fp:
 		labels = pickle.load(fp)
 
 	#num_feats = [100,1000,10000,30000]
@@ -185,7 +185,7 @@ def main():
 		print('Number of features = ' + str(n))
 
 		vectorizer = CountVectorizer(max_features=n, ngram_range=(1, 1), 
-			binary=True, stop_words=ignoredwords)
+			binary=False, stop_words=ignoredwords)
 
 		#print(texts)
 
@@ -249,11 +249,14 @@ def main():
 		print(recall_score(y_test, y_pred, average='macro'))
 		print(f1_score(y_test, y_pred, average='macro'))
 
-		coefs = np.abs(logisticRegr.coef_[0])
+		coefs = np.abs(mnb.coef_[0])
 		top10 = np.argpartition(coefs, -10)[-10:]
 		top10_sorted = top10[np.argsort(coefs[top10])]
 		for feat in top10_sorted:
-			print(feature_names[feat])
+			if feat >= n:
+				print(feat)
+			else:
+				print(feature_names[feat])
 
 		#SGD
 

@@ -56,6 +56,9 @@ def main():
 	
 
 	negated = False
+	prev = None
+
+	sentiments = []
 
 	with open('qna.csv',encoding='utf8') as csv_file:
 		csv_reader = csv.reader(csv_file, delimiter=',')
@@ -77,7 +80,10 @@ def main():
 					except Exception:
 						continue
 				if (row[3],date) not in content:
+					if prev != None:
+						sentiments.append(prev)
 					content[(row[3],date)] = np.zeros(10)
+					prev = np.zeros(10)
 				words = regex.sub('', row[13])
 				words = tokenizer.tokenize(words)
 				for i in range(len(words)):
@@ -92,10 +98,13 @@ def main():
 							#print('negating!')
 						if word in negations:
 							negated = True
-						content[(row[3],date)] += feats
+						prev += feats
 				line_count += 1
 
+		sentiments.append(prev)
+
 		print('here')
+		print(len(sentiments))
 
 	with open('statements.csv',encoding='utf8') as csv_file:
 		csv_reader = csv.reader(csv_file, delimiter=',')
