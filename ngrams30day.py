@@ -22,6 +22,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 from nltk import word_tokenize
+from scipy.sparse import coo_matrix, hstack
 
 def main():
 
@@ -73,6 +74,62 @@ def main():
 				masterdict[row[0]] = features
 				line_count += 1
 		#print(masterdict)
+
+	negated = False
+	prev = None
+
+	sentiments = []
+
+	with open('qna.csv',encoding='utf8') as csv_file:
+		csv_reader = csv.reader(csv_file, delimiter=',')
+		line_count = 0
+		for row in csv_reader:
+			if line_count == 0:
+				print(f'Column names are {", ".join(row)}')
+				line_count += 1
+			else:
+				try:
+					day = row[10][:row[10].index(',')+6]
+				except Exception:
+					continue
+				try:
+					date = datetime.strptime(day, '%B %d, %Y')
+				except Exception:
+					try:
+						date = datetime.strptime(day, '%b %d, %Y')
+					except Exception:
+						continue
+				if (row[3], date) not in nextdaydict:
+					continue
+				words = regex.sub('', row[13])
+				words = tokenizer.tokenize(words)
+				totalfeats = np.zeros(10)
+				for i in range(len(words)):
+					word = words[i].upper()
+					if word in masterdict:
+						feats = masterdict[word]
+						if negated:
+							temp = feats[0]
+							feats[0] = feats[1]
+							feats[1] = temp
+							negated = False
+							#print('negating!')
+						if word in negations:
+							negated = True
+						totalfeats += feats
+				if prev == (row[3],date):
+					sentiments[len(sentiments) - 1] += totalfeats
+				else:
+					sentiments.append(totalfeats)
+					prev = (row[3],date)
+				line_count += 1
+
+		print('here')
+
+	with open('sentiments30.pickle', 'wb') as handle:
+		pickle.dump(sentiments, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+	print('dumped')
 	
 	# prev = None
 	# with open('qna.csv',encoding='utf8') as csv_file:
@@ -119,6 +176,9 @@ def main():
 
 	#num_feats = [100,1000,10000,30000]
 	num_feats = [1000,10000,100000,1000000]
+	print(len(texts))
+	print(len(labels))
+	print(len(sentiments))
 
 	for n in num_feats:
 
@@ -129,13 +189,19 @@ def main():
 
 		#print(texts)
 
-		x_train, x_test, y_train, y_test = train_test_split(texts, labels, test_size=0.2)
+		x_train, x_test, y_train, y_test, s_train, s_test = train_test_split(texts, labels, sentiments, test_size=0.2)
 
 		print('Percent positive = ' + str(np.sum(labels)/len(labels)))
 
 		#print(x_train)
 
 		X_train = vectorizer.fit_transform(x_train)
+
+		X_train = hstack([X_train,np.array(s_train)])
+
+		#X_train = np.append(X_train.data, np.array(s_train).data, axis=1)
+
+		print('done')
 
 		feature_names = vectorizer.get_feature_names()
 
@@ -144,28 +210,30 @@ def main():
 
 		X_test = vectorizer.transform(x_test)
 
+		X_test = hstack([X_test,np.array(s_test)])
+
 		print(X_test.shape)
 
 		#Logistic Regression
 
-		# logisticRegr = LogisticRegression(max_iter=10000)
-		# logisticRegr.fit(X_train, y_train)
+		logisticRegr = LogisticRegression(max_iter=10000)
+		logisticRegr.fit(X_train, y_train)
 
-		# y_pred = logisticRegr.predict(X_test)
+		y_pred = logisticRegr.predict(X_test)
 
-		# pos = np.sum(y_pred)/len(y_test)
+		pos = np.sum(y_pred)/len(y_test)
 
-		# print('percent positive predictions = ' + str(pos))
+		print('percent positive predictions = ' + str(pos))
 
-		# score = logisticRegr.score(X_test, y_test)
-		# print(score)
-		# print(f1_score(y_test, y_pred, average='macro'))
+		score = logisticRegr.score(X_test, y_test)
+		print(score)
+		print(f1_score(y_test, y_pred, average='macro'))
 
-		# coefs = np.abs(logisticRegr.coef_[0])
-		# top10 = np.argpartition(coefs, -10)[-10:]
-		# top10_sorted = top10[np.argsort(coefs[top10])]
-		# for feat in top10_sorted:
-		# 	print(feature_names[feat])
+		coefs = np.abs(logisticRegr.coef_[0])
+		top10 = np.argpartition(coefs, -10)[-10:]
+		top10_sorted = top10[np.argsort(coefs[top10])]
+		for feat in top10_sorted:
+			print(feature_names[feat])
 
 		#Naive Bayes
 
