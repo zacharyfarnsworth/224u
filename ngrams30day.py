@@ -57,79 +57,79 @@ def main():
 	with open('nextday30dict.pickle', 'rb') as handle:
 		nextdaydict = pickle.load(handle)
 
-	with open('LoughranMcDonald_MasterDictionary_2018.csv',encoding='utf8') as csv_file:
-		csv_reader = csv.reader(csv_file, delimiter=',')
-		line_count = 0
-		for row in csv_reader:
-			if line_count == 0:
-				print(f'Column names are {", ".join(row)}')
-				line_count += 1
-			else:
-				features = np.zeros(numfeatures)
-				for i in range(7,17):
-					val = float(row[i])
-					if val > 100:
-						val = 1.0
-					features[i-7] = val
-				masterdict[row[0]] = features
-				line_count += 1
+	# with open('LoughranMcDonald_MasterDictionary_2018.csv',encoding='utf8') as csv_file:
+	# 	csv_reader = csv.reader(csv_file, delimiter=',')
+	# 	line_count = 0
+	# 	for row in csv_reader:
+	# 		if line_count == 0:
+	# 			print(f'Column names are {", ".join(row)}')
+	# 			line_count += 1
+	# 		else:
+	# 			features = np.zeros(numfeatures)
+	# 			for i in range(7,17):
+	# 				val = float(row[i])
+	# 				if val > 100:
+	# 					val = 1.0
+	# 				features[i-7] = val
+	# 			masterdict[row[0]] = features
+	# 			line_count += 1
 		#print(masterdict)
 
-	negated = False
-	prev = None
+	# negated = False
+	# prev = None
 
-	sentiments = []
+	# sentiments = []
 
-	with open('qna.csv',encoding='utf8') as csv_file:
-		csv_reader = csv.reader(csv_file, delimiter=',')
-		line_count = 0
-		for row in csv_reader:
-			if line_count == 0:
-				print(f'Column names are {", ".join(row)}')
-				line_count += 1
-			else:
-				try:
-					day = row[10][:row[10].index(',')+6]
-				except Exception:
-					continue
-				try:
-					date = datetime.strptime(day, '%B %d, %Y')
-				except Exception:
-					try:
-						date = datetime.strptime(day, '%b %d, %Y')
-					except Exception:
-						continue
-				if (row[3], date) not in nextdaydict:
-					continue
-				words = regex.sub('', row[13])
-				words = tokenizer.tokenize(words)
-				totalfeats = np.zeros(10)
-				for i in range(len(words)):
-					word = words[i].upper()
-					if word in masterdict:
-						feats = masterdict[word]
-						if negated:
-							temp = feats[0]
-							feats[0] = feats[1]
-							feats[1] = temp
-							negated = False
-							#print('negating!')
-						if word in negations:
-							negated = True
-						totalfeats += feats
-				if prev == (row[3],date):
-					sentiments[len(sentiments) - 1] += totalfeats
-				else:
-					sentiments.append(totalfeats)
-					prev = (row[3],date)
-				line_count += 1
+	# with open('qna.csv',encoding='utf8') as csv_file:
+	# 	csv_reader = csv.reader(csv_file, delimiter=',')
+	# 	line_count = 0
+	# 	for row in csv_reader:
+	# 		if line_count == 0:
+	# 			print(f'Column names are {", ".join(row)}')
+	# 			line_count += 1
+	# 		else:
+	# 			try:
+	# 				day = row[10][:row[10].index(',')+6]
+	# 			except Exception:
+	# 				continue
+	# 			try:
+	# 				date = datetime.strptime(day, '%B %d, %Y')
+	# 			except Exception:
+	# 				try:
+	# 					date = datetime.strptime(day, '%b %d, %Y')
+	# 				except Exception:
+	# 					continue
+	# 			if (row[3], date) not in nextdaydict:
+	# 				continue
+	# 			words = regex.sub('', row[13])
+	# 			words = tokenizer.tokenize(words)
+	# 			totalfeats = np.zeros(10)
+	# 			for i in range(len(words)):
+	# 				word = words[i].upper()
+	# 				if word in masterdict:
+	# 					feats = masterdict[word]
+	# 					if negated:
+	# 						temp = feats[0]
+	# 						feats[0] = feats[1]
+	# 						feats[1] = temp
+	# 						negated = False
+	# 						#print('negating!')
+	# 					if word in negations:
+	# 						negated = True
+	# 					totalfeats += feats
+	# 			if prev == (row[3],date):
+	# 				sentiments[len(sentiments) - 1] += totalfeats
+	# 			else:
+	# 				sentiments.append(totalfeats)
+	# 				prev = (row[3],date)
+	# 			line_count += 1
 
 		print('here')
 
-	with open('sentiments30.pickle', 'wb') as handle:
-		pickle.dump(sentiments, handle, protocol=pickle.HIGHEST_PROTOCOL)
+	with open('sentiments30.pickle', 'rb') as fp:
+		sentiments = pickle.load(fp)
 
-	print('dumped')
+	#print('dumped')
 	
 	# prev = None
 	# with open('qna.csv',encoding='utf8') as csv_file:
@@ -248,6 +248,12 @@ def main():
 		# print(precision_score(y_test, y_pred, average='macro'))
 		# print(recall_score(y_test, y_pred, average='macro'))
 		# print(f1_score(y_test, y_pred, average='macro'))
+
+		# coefs = np.abs(logisticRegr.coef_[0])
+		# top10 = np.argpartition(coefs, -10)[-10:]
+		# top10_sorted = top10[np.argsort(coefs[top10])]
+		# for feat in top10_sorted:
+		# 	print(feature_names[feat])
 
 		#SGD
 
