@@ -185,7 +185,7 @@ def main():
 		print('Number of features = ' + str(n))
 
 		vectorizer = CountVectorizer(max_features=n, ngram_range=(2, 2), 
-			binary=False, stop_words=ignoredwords)
+			binary=True, stop_words=ignoredwords)
 
 		#print(texts)
 
